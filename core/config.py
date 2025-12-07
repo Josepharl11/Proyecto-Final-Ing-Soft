@@ -1,0 +1,2 @@
+SESSION_TIMEOUT_MINUTES = 15
+PROJECT_NAME = "Proyecto Final - Backend"
