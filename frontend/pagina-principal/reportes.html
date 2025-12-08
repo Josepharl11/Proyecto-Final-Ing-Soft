@@ -56,11 +56,9 @@
                     <option value="hogar">🏠 Hogar</option>
                 </select>
             </div>
-
-            <button class="btn-export" onclick="exportReport()">📥 Exportar PDF</button>
         </section>
 
-        <!-- Resumen del Reporte -->
+        <!-- Resumen del Reporte (solo tarjetas arriba) -->
         <section class="report-summary">
             <div class="summary-card">
                 <div class="card-icon">📊</div>
@@ -87,13 +85,21 @@
             </div>
         </section>
 
-        <!-- Tabla de Gastos -->
-        <section class="report-table-section">
+        <!-- Encabezado + botón PDF -->
+        <div class="reporte-header">
+            <h2>Reportes de gastos</h2>
+            <button id="btn-exportar-pdf" class="btn-export-pdf">
+                📄 Exportar a PDF
+            </button>
+        </div>
+
+        <!-- Contenedor que se convertirá en PDF: SOLO detalle de gastos -->
+        <section id="reporte-pdf" class="report-table-section">
             <div class="section-header">
                 <h3 class="section-title">Detalle de Gastos</h3>
                 <span class="records-count" id="recordsCount">0 registros</span>
             </div>
-            
+
             <div class="table-container">
                 <table class="expenses-table">
                     <thead>
@@ -113,6 +119,11 @@
         </section>
     </main>
 
+    <!-- Librería html2pdf (incluye html2canvas + jsPDF) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"
+            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <!-- Lógica de reportes -->
     <script src="reportes.js"></script>
 </body>
 </html>
