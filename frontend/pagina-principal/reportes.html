@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reportes - MoniFlow</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo-section">
+                <img src="img/logo-moniflow.jpg" alt="moniFlow Logo" class="logo">
+                <h1>MoniFlow</h1>
+            </div>
+            <div class="user-section">
+                <span class="user-name">Hola, <strong id="userName">Carlos</strong></span>
+                <button class="btn-secondary" onclick="goToDashboard()">← Volver al Dashboard</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="main-container">
+        <h2 class="page-title">Reportes y Análisis</h2>
+
+        <!-- Filtros de Reporte -->
+        <section class="report-filters">
+            <div class="filter-group">
+                <label for="reportPeriod">Período</label>
+                <select id="reportPeriod" class="form-input" onchange="updateReport()">
+                    <option value="today">Hoy</option>
+                    <option value="week">Esta Semana</option>
+                    <option value="month" selected>Este Mes</option>
+                    <option value="custom">Personalizado</option>
+                </select>
+            </div>
+
+            <div class="filter-group" id="customDateRange" style="display: none;">
+                <label for="startDate">Desde</label>
+                <input type="date" id="startDate" class="form-input">
+                <label for="endDate">Hasta</label>
+                <input type="date" id="endDate" class="form-input">
+            </div>
+
+            <div class="filter-group">
+                <label for="reportCategory">Categoría</label>
+                <select id="reportCategory" class="form-input" onchange="updateReport()">
+                    <option value="all">Todas</option>
+                    <option value="comida">🍔 Comida</option>
+                    <option value="transporte">🚗 Transporte</option>
+                    <option value="entretenimiento">🎮 Entretenimiento</option>
+                    <option value="educación">📚 Educación</option>
+                    <option value="salud">⚕️ Salud</option>
+                    <option value="hogar">🏠 Hogar</option>
+                </select>
+            </div>
+
+            <button class="btn-export" onclick="exportReport()">📥 Exportar PDF</button>
+        </section>
+
+        <!-- Resumen del Reporte -->
+        <section class="report-summary">
+            <div class="summary-card">
+                <div class="card-icon">📊</div>
+                <div class="card-content">
+                    <p class="card-label">Total Gastos</p>
+                    <h2 class="card-amount" id="reportTotal">RD$ 0.00</h2>
+                </div>
+            </div>
+
+            <div class="summary-card">
+                <div class="card-icon">📈</div>
+                <div class="card-content">
+                    <p class="card-label">Promedio Diario</p>
+                    <h2 class="card-amount" id="reportAverage">RD$ 0.00</h2>
+                </div>
+            </div>
+
+            <div class="summary-card">
+                <div class="card-icon">🏆</div>
+                <div class="card-content">
+                    <p class="card-label">Categoría Principal</p>
+                    <h2 class="card-amount" id="topCategory">-</h2>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tabla de Gastos -->
+        <section class="report-table-section">
+            <div class="section-header">
+                <h3 class="section-title">Detalle de Gastos</h3>
+                <span class="records-count" id="recordsCount">0 registros</span>
+            </div>
+            
+            <div class="table-container">
+                <table class="expenses-table">
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Descripción</th>
+                            <th>Categoría</th>
+                            <th>Monto</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="expensesTableBody">
+                        <!-- Se llena dinámicamente -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <script src="reportes.js"></script>
+</body>
+</html>

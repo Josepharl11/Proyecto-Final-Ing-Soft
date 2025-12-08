@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Categorías - MoniFlow</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo-section">
+                <img src="img/logo-moniflow.jpg" alt="moniFlow Logo" class="logo">
+                <h1>MoniFlow</h1>
+            </div>
+            <div class="user-section">
+                <span class="user-name">Hola, <strong id="userName">Carlos</strong></span>
+                <button class="btn-secondary" onclick="goToDashboard()">← Volver al Dashboard</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="main-container">
+        <h2 class="page-title">Gestión de Categorías</h2>
+
+        <!-- Botón para agregar nueva categoría -->
+        <div class="category-actions">
+            <button class="btn-add-category" onclick="showAddCategoryModal()">
+                 Agregar Nueva Categoría
+            </button>
+        </div>
+
+        <!-- Lista de Categorías -->
+        <section class="categories-grid" id="categoriesGrid">
+            <!-- Se llena dinámicamente -->
+        </section>
+
+        <!-- Modal para Agregar/Editar Categoría -->
+        <div id="categoryModal" class="modal" style="display: none;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 id="modalTitle">Nueva Categoría</h3>
+                    <button class="modal-close" onclick="closeCategoryModal()">×</button>
+                </div>
+
+                <form id="categoryForm" class="category-form">
+                    <div class="form-group">
+                        <label for="categoryName">Nombre <span class="required">*</span></label>
+                        <input type="text" id="categoryName" name="categoryName" required 
+                               placeholder="Ej: Mascotas" class="form-input" maxlength="20">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="categoryIcon">Emoji/Icono <span class="required">*</span></label>
+                        <div class="icon-selector">
+                            <input type="text" id="categoryIcon" name="categoryIcon" required 
+                                   placeholder="🐕" class="form-input icon-input" maxlength="2">
+                            <div class="icon-suggestions">
+                                <button type="button" class="icon-btn" onclick="selectIcon('🛒')">🛒</button>
+                                <button type="button" class="icon-btn" onclick="selectIcon('🚙')">🚙</button>
+                                <button type="button" class="icon-btn" onclick="selectIcon('🎬')">🎬</button>
+                                <button type="button" class="icon-btn" onclick="selectIcon('💼')">💼</button>
+                                <button type="button" class="icon-btn" onclick="selectIcon('🐕')">🐕</button>
+                                <button type="button" class="icon-btn" onclick="selectIcon('👕')">👕</button>
+                                <button type="button" class="icon-btn" onclick="selectIcon('✈️')">✈️</button>
+                                <button type="button" class="icon-btn" onclick="selectIcon('🎁')">🎁</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="categoryColor">Color <span class="required">*</span></label>
+                        <div class="color-selector">
+                            <input type="color" id="categoryColor" name="categoryColor" 
+                                   value="#8b5cf6" class="color-input">
+                            <div class="color-preview" id="colorPreview"></div>
+                        </div>
+                        <div class="color-suggestions">
+                            <button type="button" class="color-btn" style="background: #f59e0b" onclick="selectColor('#f59e0b')"></button>
+                            <button type="button" class="color-btn" style="background: #3b82f6" onclick="selectColor('#3b82f6')"></button>
+                            <button type="button" class="color-btn" style="background: #ec4899" onclick="selectColor('#ec4899')"></button>
+                            <button type="button" class="color-btn" style="background: #6366f1" onclick="selectColor('#6366f1')"></button>
+                            <button type="button" class="color-btn" style="background: #10b981" onclick="selectColor('#10b981')"></button>
+                            <button type="button" class="color-btn" style="background: #f97316" onclick="selectColor('#f97316')"></button>
+                            <button type="button" class="color-btn" style="background: #8b5cf6" onclick="selectColor('#8b5cf6')"></button>
+                            <button type="button" class="color-btn" style="background: #14b8a6" onclick="selectColor('#14b8a6')"></button>
+                        </div>
+                    </div>
+
+                    <input type="hidden" id="categoryId" name="categoryId">
+
+                    <div class="form-actions">
+                        <button type="button" class="btn-cancel" onclick="closeCategoryModal()">Cancelar</button>
+                        <button type="submit" class="btn-submit"> Guardar Categoría</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <script src="categorias.js"></script>
+</body>
+</html>

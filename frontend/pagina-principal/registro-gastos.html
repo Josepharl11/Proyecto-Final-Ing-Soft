@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registrar Gasto - MoniFlow</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo-section">
+                <img src="img/logo-moniflow.jpg" alt="moniFlow Logo" class="logo">
+                <h1>moniFlow</h1>
+            </div>
+            <div class="user-section">
+                <span class="user-name">Hola, <strong id="userName">Carlos</strong></span>
+                <button class="btn-secondary" onclick="goToDashboard()">← Volver al Dashboard</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="main-container">
+        <div class="page-wrapper">
+
+            <!-- Layout con imagen + formulario -->
+            <div class="register-layout">
+
+                <!-- Lado izquierdo: imagen dinámica según categoría -->
+                <div class="left-visual">
+                    <img id="categoryImage" src="img/registro-g.png" alt="Categoría">
+                </div>
+
+                <!-- Lado derecho: formulario -->
+                <div class="form-container">
+                    <h2 class="page-title">Registrar Nuevo Gasto</h2>
+                    <p class="page-subtitle">Completa los detalles del gasto para mantener tu registro actualizado</p>
+
+                    <!-- Formulario de Registro -->
+                    <form id="expenseForm" class="expense-form">
+                        <!-- Monto -->
+                        <div class="form-group">
+                            <label for="amount">Monto <span class="required">*</span></label>
+                            <div class="input-with-icon">
+                                <span class="input-icon">RD$</span>
+                                <input type="number" id="amount" name="amount" step="0.01" min="0.01" required
+                                       placeholder="0.00" class="form-input">
+                            </div>
+                        </div>
+
+                        <!-- Fecha -->
+                        <div class="form-group">
+                            <label for="date">Fecha <span class="required">*</span></label>
+                            <input type="date" id="date" name="date" required class="form-input">
+                        </div>
+
+                        <!-- Descripción -->
+                        <div class="form-group">
+                            <label for="description">Descripción <span class="required">*</span></label>
+                            <input type="text" id="description" name="description" required
+                                   placeholder="Ej: Almuerzo en restaurante" class="form-input" maxlength="100">
+                        </div>
+
+                        <!-- Categoría (se llena dinámicamente con default + personalizadas) -->
+                        <div class="form-group">
+                            <label for="category">Categoría <span class="required">*</span></label>
+                            <select id="category" name="category" required class="form-input">
+                                <option value="">Selecciona una categoría</option>
+                            </select>
+                        </div>
+
+                        <!-- Moneda -->
+                        <div class="form-group">
+                            <label for="currency">Moneda</label>
+                            <select id="currency" name="currency" class="form-input">
+                                <option value="DOP" selected>DOP - Peso Dominicano</option>
+                                <option value="USD">USD - Dólar Americano</option>
+                                <option value="EUR">EUR - Euro</option>
+                            </select>
+                        </div>
+
+                        <!-- Mensaje de error -->
+                        <div id="errorMessage" class="error-message" style="display: none;"></div>
+
+                        <!-- Botones -->
+                        <div class="form-actions">
+                            <button type="button" class="btn-cancel" onclick="goToDashboard()">Cancelar</button>
+                            <button type="submit" class="btn-submit">💾 Guardar Gasto</button>
+                        </div>
+                    </form>
+
+                    <!-- Preview del gasto -->
+                    <div id="expensePreview" class="expense-preview" style="display: none;">
+                        <h3>Vista Previa</h3>
+                        <div class="preview-content">
+                            <div class="preview-item">
+                                <span class="preview-label">Monto:</span>
+                                <span class="preview-value" id="previewAmount">RD$ 0.00</span>
+                            </div>
+                            <div class="preview-item">
+                                <span class="preview-label">Categoría:</span>
+                                <span class="preview-value" id="previewCategory">-</span>
+                            </div>
+                            <div class="preview-item">
+                                <span class="preview-label">Fecha:</span>
+                                <span class="preview-value" id="previewDate">-</span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div> <!-- /form-container -->
+
+            </div> <!-- /register-layout -->
+
+        </div>
+    </main>
+
+    <script src="registro-gastos.js"></script>
+</body>
+</html>

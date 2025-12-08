@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Límites de Gastos - MoniFlow</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo-section">
+                <img src="img/logo-moniflow.jpg" alt="moniFlow Logo" class="logo">
+                <h1>MoniFlow</h1>
+            </div>
+            <div class="user-section">
+                <span class="user-name">Hola, <strong id="userName">Carlos</strong></span>
+                <button class="btn-secondary" onclick="goToDashboard()">← Volver al Dashboard</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="main-container">
+        <h2 class="page-title">Control de Límites de Gastos</h2>
+
+        <!-- Límite General Mensual -->
+        <section class="limit-section">
+            <h3 class="section-title">Límite Mensual General</h3>
+
+            <div class="limit-card">
+                <div class="limit-form">
+                    <div class="form-group-inline">
+                        <label for="monthlyLimit">Límite mensual</label>
+                        <div class="input-with-button">
+                            <input type="number" id="monthlyLimit" value="15000" min="0" step="100" class="form-input">
+                            <button class="btn-save" onclick="saveMonthlyLimit()">Guardar</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="limit-progress-container">
+                    <div class="limit-info">
+                        <span class="limit-label">Gastado este mes</span>
+                        <span class="limit-value" id="monthlySpent">RD$ 0.00</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="monthlyProgress" style="width: 0%"></div>
+                    </div>
+                    <div class="limit-stats">
+                        <span class="stat-item">
+                            <span class="stat-label">Disponible:</span>
+                            <span class="stat-value" id="monthlyAvailable">RD$ 15,000.00</span>
+                        </span>
+                        <span class="stat-item">
+                            <span class="stat-label">Progreso:</span>
+                            <span class="stat-value" id="monthlyPercentage">0%</span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Límites por Categoría -->
+        <section class="limit-section">
+            <h3 class="section-title">Límites por Categoría</h3>
+
+            <div class="categories-limits" id="categoriesLimits">
+                <!-- Se genera dinámicamente -->
+            </div>
+        </section>
+
+        <!-- Alertas Configuradas -->
+        <section class="limit-section">
+            <h3 class="section-title">Configuración de Alertas</h3>
+
+            <div class="alerts-config">
+                <div class="alert-option">
+                    <input type="checkbox" id="alert80" checked>
+                    <label for="alert80">
+                        <strong>Alerta al 80%</strong>
+                        <span class="option-description">Recibir notificación al alcanzar el 80% del límite</span>
+                    </label>
+                </div>
+
+                <div class="alert-option">
+                    <input type="checkbox" id="alert100" checked>
+                    <label for="alert100">
+                        <strong>Alerta al 100%</strong>
+                        <span class="option-description">Recibir notificación al superar el límite establecido</span>
+                    </label>
+                </div>
+
+                <div class="alert-option">
+                    <input type="checkbox" id="emailAlerts">
+                    <label for="emailAlerts">
+                        <strong>Alertas por correo</strong>
+                        <span class="option-description">Enviar notificaciones por email además de en la app</span>
+                    </label>
+                </div>
+            </div>
+
+            <button class="btn-submit" onclick="saveAlertSettings()"> Guardar Configuración</button>
+        </section>
+    </main>
+
+    <script src="limites.js"></script>
+</body>
+</html>

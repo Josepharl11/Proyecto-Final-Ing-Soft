@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MoniFlow - Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo-section">
+                <img src="img/logo-moniflow.jpg" alt="moniFlow Logo" class="logo">
+                <h1>MoniFlow</h1>
+            </div>
+            <div class="user-section">
+                <span class="user-name">Hola, <strong id="userName">Carlos</strong></span>
+                <button class="btn-logout" onclick="logout()">Cerrar Sesión</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="main-container">
+        <!-- Alert de límite (oculto por defecto) -->
+        <div id="limitAlert" class="alert-limit" style="display: none;">
+            <span class="alert-icon">⚠️</span>
+            <span id="alertMessage"></span>
+            <button class="alert-close" onclick="closeAlert()">×</button>
+        </div>
+
+        <!-- Filtros -->
+        <div class="filters-section">
+            <button class="filter-btn active" data-filter="month" onclick="filterByPeriod('month')">Este Mes</button>
+            <button class="filter-btn" data-filter="week" onclick="filterByPeriod('week')">Esta Semana</button>
+            <button class="filter-btn" data-filter="today" onclick="filterByPeriod('today')">Hoy</button>
+        </div>
+
+        <!-- Resumen Financiero -->
+        <section class="summary-section">
+            <div class="summary-card">
+                <div class="card-icon">📅</div>
+                <div class="card-content">
+                    <p class="card-label">Gastado Hoy</p>
+                    <h2 class="card-amount" id="todayTotal">RD$ 0.00</h2>
+                </div>
+            </div>
+
+            <div class="summary-card">
+                <div class="card-icon">📊</div>
+                <div class="card-content">
+                    <p class="card-label">Esta Semana</p>
+                    <h2 class="card-amount" id="weekTotal">RD$ 0.00</h2>
+                </div>
+            </div>
+
+            <div class="summary-card">
+                <div class="card-icon">💰</div>
+                <div class="card-content">
+                    <p class="card-label">Este Mes</p>
+                    <h2 class="card-amount" id="monthTotal">RD$ 0.00</h2>
+                </div>
+            </div>
+        </section>
+
+        <!-- Gráfico Circular y Gastos Recientes -->
+        <div class="content-grid">
+            <!-- Gráfico Circular con Gasto Total -->
+            <section class="chart-section">
+                <h3 class="section-title">Gasto Total por Categoría</h3>
+
+                <div class="pie-chart-container">
+                    <div class="pie-chart" id="pieChart"></div>
+                    <div class="pie-chart-center">
+                        <div class="total-label">Total</div>
+                        <div class="total-amount" id="totalAmount">RD$ 0.00</div>
+                    </div>
+                </div>
+
+                <div class="chart-legend" id="chartLegend"></div>
+            </section>
+
+            <!-- Gastos Recientes -->
+            <section class="recent-section">
+                <div class="section-header">
+                    <h3 class="section-title">Gastos Recientes</h3>
+                    <button class="btn-link" onclick="goToReports()">Ver todos →</button>
+                </div>
+                <div class="expenses-list" id="expensesList"></div>
+            </section>
+        </div>
+
+        <!-- Navegación Rápida -->
+        <section class="quick-actions">
+            <button class="action-card" onclick="goToReports()">
+                <span class="action-icon">📈</span>
+                <span class="action-label">Reportes</span>
+            </button>
+            <button class="action-card" onclick="goToLimits()">
+                <span class="action-icon">🎯</span>
+                <span class="action-label">Límites</span>
+            </button>
+            <button class="action-card" onclick="goToCategories()">
+                <span class="action-icon">🏷️</span>
+                <span class="action-label">Categorías</span>
+            </button>
+        </section>
+    </main>
+
+    <!-- Botón Flotante -->
+    <button class="fab" onclick="registerExpense()">
+        <span class="fab-icon">+</span>
+        <span class="fab-text">Registrar Gasto</span>
+    </button>
+
+
+    <script src="dashboard.js"></script>
+</body>
+</html>
