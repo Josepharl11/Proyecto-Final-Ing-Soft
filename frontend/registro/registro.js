@@ -133,7 +133,7 @@ document.addEventListener("DOMContentLoaded", () => {
             msg.classList.add("success");
 
             setTimeout(() => {
-                window.location.href = "login.html";
+                window.location.href = "../inicio-sesion/index.html";
             }, 1500);
 
         } catch (error) {
