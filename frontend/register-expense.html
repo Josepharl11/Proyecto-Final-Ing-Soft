@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Registrar Gasto - MoniFlow</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+<div class="container-main">
+    
+  
+    <div class="left-visual">
+        <img id="categoryImage" src="img/registro-g.png" alt="Categoría">
+    </div>
+
+  
+    <div class="expense-wrapper">
+
+        <h2 class="expense-title">Registrar Gasto</h2>
+
+        <div id="errorMessage"></div>
+
+        <form id="expenseForm">
+            <div class="form-group">
+                <label>Monto</label>
+                <input type="number" id="amount" placeholder="Ej: 850.00" required>
+            </div>
+
+            <div class="form-group">
+                <label>Fecha del gasto</label>
+                <input type="date" id="date" required>
+            </div>
+
+            <div class="form-group">
+                <label>Categoría</label>
+                <select id="category" required>
+                    <option value="">Seleccione</option>
+                    <option value="Comida">Comida</option>
+                    <option value="Transporte">Transporte</option>
+                    <option value="Entretenimiento">Entretenimiento</option>
+                    <option value="Educacion">Educación</option>
+                    <option value="Salud">Salud</option>
+                    <option value="Hogar">Hogar</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Moneda</label>
+                <select id="currency" required>
+                    <option value="DOP">DOP (RD$)</option>
+                    <option value="USD">USD ($)</option>
+                    <option value="EUR">EUR (€)</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Descripción</label>
+                <textarea id="description" rows="3" placeholder="Ej: Almuerzo en comida rápida"></textarea>
+            </div>
+
+            <button type="submit">Guardar</button>
+        </form>
+
+        <h3 class="history-title">Historial</h3>
+        <div id="historyList"></div>
+
+        <div class="totals-box" id="totalBox">
+            Total: RD$ 0.00
+        </div>
+
+    </div>
+</div>
+
+<script>
+
+
+    const categoryImages = {
+        Comida: "img/comida-g.png",
+        Transporte: "img/transporte-g.png",
+        Entretenimiento: "img/entetenimiento-g.png",
+        Educacion: "img/edu-g.png",
+        Salud: "img/salud-g.png",
+        Hogar: "img/home-g.png"
+    };
+
+    document.getElementById("category").addEventListener("change", function () {
+        const img = document.getElementById("categoryImage");
+        img.style.opacity = 0;
+
+        setTimeout(() => {
+            img.src = categoryImages[this.value] || img.src;
+            img.style.opacity = 1;
+        }, 300);
+    });
+
+ 
+    let expenses = [];
+    const baseRates = { USD: 60, EUR: 65, DOP: 1 };
+
+    function convertCurrency(amount, currency) {
+        return amount * baseRates[currency];
+    }
+
+    function showError(msg) {
+        const err = document.getElementById("errorMessage");
+        err.style.display = "block";
+        err.innerText = msg;
+    }
+
+    function updateHistory() {
+        const list = document.getElementById("historyList");
+        list.innerHTML = "";
+
+        expenses.forEach(e => {
+            const item = document.createElement("div");
+            item.classList.add("expense-item");
+            item.innerHTML = `
+                <strong>${e.category}</strong> - ${e.description}<br>
+                Monto original: ${e.amount} ${e.currency}<br>
+                Convertido: RD$ ${e.converted}<br>
+                Fecha: ${e.date}
+            `;
+            list.appendChild(item);
+        });
+
+        const total = expenses.reduce((acc, e) => acc + e.converted, 0);
+        document.getElementById("totalBox").innerText = "Total: RD$ " + total.toFixed(2);
+    }
+
+    document.getElementById("expenseForm").addEventListener("submit", function(e) {
+        e.preventDefault();
+        document.getElementById("errorMessage").style.display = "none";
+
+        const amount = parseFloat(document.getElementById("amount").value);
+        const date = document.getElementById("date").value;
+        const category = document.getElementById("category").value;
+        const currency = document.getElementById("currency").value;
+        const description = document.getElementById("description").value;
+
+        const today = new Date().toISOString().split("T")[0];
+        if (date > today) {
+            showError("No puedes registrar gastos con fecha futura.");
+            return;
+        }
+
+        const converted = convertCurrency(amount, currency);
+
+        expenses.push({ amount, date, category, currency, description, converted });
+
+        updateHistory();
+        document.getElementById("expenseForm").reset();
+    });
+
+</script>
+
+</body>
+</html>
