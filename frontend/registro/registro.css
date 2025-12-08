@@ -1,0 +1,315 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background: linear-gradient(135deg, #22C55E 0%, #2563EB 100%);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.moniflow-container {
+    display: flex;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+    max-width: 1000px;
+    width: 100%;
+    min-height: 600px;
+    animation: slideIn 0.5s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Lado izquierdo - Branding */
+.moniflow-left {
+    flex: 1;
+    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+    color: #1e293b;
+    padding: 60px 50px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.logo-container {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 40px;
+}
+
+.logo-icon {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, #22C55E 0%, #2563EB 100%);
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    color: white;
+    box-shadow: 0 4px 15px rgba(37, 99, 235, 0.2);
+}
+
+.logo-text {
+    font-size: 32px;
+    font-weight: 700;
+    background: linear-gradient(135deg, #22C55E 0%, #2563EB 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+.welcome-section {
+    text-align: center;
+}
+
+.welcome-section h2 {
+    font-size: 28px;
+    font-weight: 600;
+    margin-bottom: 16px;
+    line-height: 1.2;
+}
+
+.welcome-section p {
+    font-size: 16px;
+    color: #475569;
+    line-height: 1.5;
+    max-width: 300px;
+}
+
+/* Lado derecho - Formulario */
+.moniflow-right {
+    flex: 1;
+    padding: 60px 50px;
+    display: flex;
+    align-items: center;
+}
+
+.login-form-container {
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+.moniflow-form h3 {
+    font-size: 28px;
+    font-weight: 600;
+    color: #1e293b;
+    margin-bottom: 35px;
+    text-align: center;
+}
+
+.form-group {
+    margin-bottom: 20px;
+    position: relative;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: #475569;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.input-with-icon {
+    position: relative;
+}
+
+.input-with-icon i {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #94a3b8;
+    font-size: 16px;
+}
+
+.input-with-icon input {
+    width: 100%;
+    padding: 15px 15px 15px 45px;
+    border: 2px solid #e2e8f0;
+    border-radius: 10px;
+    font-size: 16px;
+    color: #1e293b;
+    background-color: #f8fafc;
+    transition: all 0.3s ease;
+}
+
+.input-with-icon input:focus {
+    outline: none;
+    border-color: #2563EB;
+    background-color: white;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.input-with-icon input::placeholder {
+    color: #94a3b8;
+}
+
+.terms-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 25px 0;
+    color: #475569;
+    font-size: 14px;
+}
+
+.terms-checkbox input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    accent-color: #2563EB;
+    cursor: pointer;
+}
+
+.terms-checkbox label {
+    font-size: 14px;
+    color: #475569;
+    cursor: pointer;
+    margin: 0;
+}
+
+.terms-checkbox a {
+    color: #2563EB;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.terms-checkbox a:hover {
+    color: #22C55E;
+    text-decoration: underline;
+}
+
+.btn-primary {
+    width: 100%;
+    padding: 15px;
+    background: linear-gradient(135deg, #22C55E 0%, #2563EB 100%);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(34, 197, 94, 0.3);
+}
+
+.btn-primary:active {
+    transform: translateY(0);
+}
+
+.login-link {
+    text-align: center;
+    margin-top: 30px;
+    color: #475569;
+    font-size: 14px;
+}
+
+.login-link a {
+    color: #2563EB;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+.login-link a:hover {
+    color: #22C55E;
+    text-decoration: underline;
+}
+
+/* Estilos para mensajes de error */
+.error-message {
+    color: #ef4444;
+    font-size: 14px;
+    margin-top: 6px;
+    padding-left: 5px;
+    display: none;
+}
+
+.error-message.show {
+    display: block;
+}
+
+.input-with-icon input.error {
+    border-color: #ef4444;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .moniflow-container {
+        flex-direction: column;
+        min-height: auto;
+    }
+    
+    .moniflow-left {
+        padding: 40px 30px;
+        min-height: 250px;
+    }
+    
+    .moniflow-right {
+        padding: 40px 30px;
+    }
+    
+    .logo-container {
+        margin-bottom: 20px;
+    }
+    
+    .welcome-section h2 {
+        font-size: 24px;
+    }
+    
+    .moniflow-form h3 {
+        font-size: 24px;
+    }
+}
+
+@media (max-width: 480px) {
+    body {
+        padding: 10px;
+    }
+    
+    .moniflow-container {
+        border-radius: 16px;
+    }
+    
+    .moniflow-left,
+    .moniflow-right {
+        padding: 30px 20px;
+    }
+    
+    .moniflow-form h3 {
+        font-size: 22px;
+    }
+    
+    .logo-text {
+        font-size: 28px;
+    }
+}
