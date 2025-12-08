@@ -62,7 +62,7 @@ async function login(event) {
         }
         
         alert(`¡Bienvenido a MoniFlow ${data.nombre}!`);
-        window.location.href = "dashboard.html";
+        window.location.href = "../pagina-principal/index.html";
         
     } catch (error) {
         errorMsg.textContent = "Error de conexión. Intenta nuevamente";

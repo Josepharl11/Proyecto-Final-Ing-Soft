@@ -1,6 +1,5 @@
 // ===================================
 // Reportes - JavaScript
-// CON EDICIÓN / ELIMINACIÓN Y localStorage
 // ===================================
 
 const categoryConfig = {
@@ -245,3 +244,33 @@ function formatDate(dateString) {
 function goToDashboard() {
     window.location.href = "index.html";
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+  const btnExportar = document.getElementById('btn-exportar-pdf');
+  const contenidoReporte = document.getElementById('reporte-pdf');
+
+  if (!btnExportar || !contenidoReporte) {
+    console.warn('No se encontró el botón o el contenedor de reporte para PDF');
+    return;
+  }
+
+  btnExportar.addEventListener('click', () => {
+    try {
+      const opciones = {
+        margin: 10,
+        filename: `Reporte-gastos-${new Date().toISOString().slice(0, 10)}.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      };
+
+      html2pdf()
+        .from(contenidoReporte)
+        .set(opciones)
+        .save();
+    } catch (error) {
+      console.error('Error generando el PDF:', error);
+      alert('Ocurrió un error al generar el PDF. Revisa la consola para más detalles.');
+    }
+  });
+});
