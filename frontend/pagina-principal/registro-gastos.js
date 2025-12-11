@@ -1,3 +1,18 @@
+document.getElementById('currency').addEventListener('change', updateCurrencySymbol);
+
+function updateCurrencySymbol() {
+    const currency = document.getElementById('currency').value;
+    const symbolSpan = document.getElementById('currencySymbol');
+
+    const symbols = {
+        USD: '$',
+        EUR: '€',
+        DOP: 'RD$'
+    };
+
+    symbolSpan.textContent = symbols[currency] || 'RD$';
+}
+
 // Categorías por defecto (IDs usados en dashboard, reportes y límites)
 const defaultCategories = {
     comida: { icon: "🍔", name: "Comida" },
