@@ -11,6 +11,14 @@ const categoryConfig = {
     hogar: { icon: "🏠", name: "Hogar", color: "#f97316" }
 };
 
+// ========== NUEVO: Tasas de cambio ==========
+const EXCHANGE_RATES = {
+    USD: 58.50,
+    EUR: 63.20,
+    DOP: 1
+};
+// ============================================
+
 let allExpenses = [];
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -41,6 +49,27 @@ function loadExpenses() {
         allExpenses = [];
     }
 }
+
+// ========== NUEVO: Funciones de conversión ==========
+function getAmountInDOP(expense) {
+    if (expense.amountDOP) {
+        return expense.amountDOP;
+    }
+    const currency = expense.currency || 'DOP';
+    const rate = EXCHANGE_RATES[currency] || 1;
+    return expense.amount * rate;
+}
+
+function formatCurrencyWithSymbol(amount, currency) {
+    const symbols = {
+        USD: '$',
+        EUR: '€',
+        DOP: 'RD$'
+    };
+    const symbol = symbols[currency] || 'RD$';
+    return `${symbol} ${parseFloat(amount).toFixed(2)}`;
+}
+// ===================================================
 
 function setupEventListeners() {
     document.getElementById("reportPeriod").addEventListener("change", function () {
@@ -88,8 +117,9 @@ function filterExpenses(period, category) {
     return filtered;
 }
 
+// ========== MODIFICADO: Usar valores en DOP ==========
 function updateSummary(expenses) {
-    const total = expenses.reduce((sum, e) => sum + (Number(e.amount) || 0), 0);
+    const total = expenses.reduce((sum, e) => sum + getAmountInDOP(e), 0);
     document.getElementById("reportTotal").textContent = formatCurrency(total);
 
     const days = getDaysCount(document.getElementById("reportPeriod").value);
@@ -99,7 +129,7 @@ function updateSummary(expenses) {
     const categoryTotals = {};
     expenses.forEach(e => {
         if (!e.category) return;
-        categoryTotals[e.category] = (categoryTotals[e.category] || 0) + (Number(e.amount) || 0);
+        categoryTotals[e.category] = (categoryTotals[e.category] || 0) + getAmountInDOP(e);
     });
 
     const topCat = Object.entries(categoryTotals).sort((a, b) => b[1] - a[1])[0];
@@ -110,6 +140,7 @@ function updateSummary(expenses) {
         document.getElementById("topCategory").textContent = "-";
     }
 }
+// =====================================================
 
 function getDaysCount(period) {
     if (period === "today") return 1;
@@ -118,6 +149,7 @@ function getDaysCount(period) {
     return 1;
 }
 
+// ========== MODIFICADO: Mostrar conversión en tabla ==========
 function updateTable(expenses) {
     const tbody = document.getElementById("expensesTableBody");
     tbody.innerHTML = "";
@@ -140,6 +172,26 @@ function updateTable(expenses) {
             color: "#64748b"
         };
 
+        const currency = expense.currency || 'DOP';
+        const originalAmount = expense.amount;
+        const amountInDOP = getAmountInDOP(expense);
+        
+        // Formatear monto para mostrar
+        let amountCell = '';
+        if (currency !== 'DOP') {
+            const originalFormatted = formatCurrencyWithSymbol(originalAmount, currency);
+            amountCell = `
+                <td class="amount-cell">
+                    ${originalFormatted}
+                    <div style="font-size: 11px; color: #64748b; margin-top: 2px;">
+                        ≈ ${formatCurrency(amountInDOP)}
+                    </div>
+                </td>
+            `;
+        } else {
+            amountCell = `<td class="amount-cell">${formatCurrency(amountInDOP)}</td>`;
+        }
+
         const row = document.createElement("tr");
         row.innerHTML = `
             <td>${formatDate(expense.date)}</td>
@@ -147,7 +199,7 @@ function updateTable(expenses) {
             <td><span class="category-badge" style="background:${config.color}20;color:${config.color};">
                 ${config.icon} ${config.name}
             </span></td>
-            <td class="amount-cell">${formatCurrency(Number(expense.amount) || 0)}</td>
+            ${amountCell}
             <td class="actions-cell">
                 <button class="btn-edit" onclick="editExpense(${expense.id})" title="Editar">✏️</button>
                 <button class="btn-delete" onclick="deleteExpense(${expense.id})" title="Eliminar">🗑️</button>
@@ -156,6 +208,7 @@ function updateTable(expenses) {
         tbody.appendChild(row);
     });
 }
+// =============================================================
 
 // ============= EDITAR / ELIMINAR =================
 
@@ -167,12 +220,15 @@ function editExpense(expenseId) {
     }
 
     const config = categoryConfig[expense.category] || { icon: "🏷️", name: expense.category || "" };
+    const currency = expense.currency || 'DOP';
+    const currentAmountFormatted = formatCurrencyWithSymbol(expense.amount, currency);
+    
     const newAmountStr = prompt(
         `Editar Gasto\n\n` +
         `Descripción: ${expense.description || ""}\n` +
         `Categoría: ${config.icon} ${config.name}\n` +
-        `Monto actual: ${formatCurrency(expense.amount)}\n\n` +
-        `Ingresa el nuevo monto:`,
+        `Monto actual: ${currentAmountFormatted}\n\n` +
+        `Ingresa el nuevo monto (en ${currency}):`,
         expense.amount
     );
 
@@ -183,9 +239,15 @@ function editExpense(expenseId) {
         return;
     }
 
-    if (!confirm(`¿Confirmas cambiar el monto a ${formatCurrency(newAmount)}?`)) return;
+    const newAmountFormatted = formatCurrencyWithSymbol(newAmount, currency);
+    if (!confirm(`¿Confirmas cambiar el monto a ${newAmountFormatted}?`)) return;
 
     expense.amount = newAmount;
+    // Recalcular amountDOP si existe
+    if (expense.amountDOP !== undefined) {
+        expense.amountDOP = getAmountInDOP(expense);
+    }
+    
     localStorage.setItem("expenses", JSON.stringify(allExpenses));
     loadExpenses();
     updateReport();
@@ -200,12 +262,14 @@ function deleteExpense(expenseId) {
     }
 
     const config = categoryConfig[expense.category] || { icon: "🏷️", name: expense.category || "" };
+    const currency = expense.currency || 'DOP';
+    const amountFormatted = formatCurrencyWithSymbol(expense.amount, currency);
 
     const confirmMsg =
         `¿Estás seguro de eliminar este gasto?\n\n` +
         `Descripción: ${expense.description || ""}\n` +
         `Categoría: ${config.icon} ${config.name}\n` +
-        `Monto: ${formatCurrency(expense.amount)}\n` +
+        `Monto: ${amountFormatted}\n` +
         `Fecha: ${formatDate(expense.date)}\n\n` +
         `⚠️ Esta acción no se puede deshacer.`;
 

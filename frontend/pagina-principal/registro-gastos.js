@@ -18,13 +18,20 @@ const categoryImages = {
     hogar: "img/home-g.png"
 };
 
+// ========== NUEVO: Tasas de cambio a Peso Dominicano ==========
+const EXCHANGE_RATES = {
+    USD: 58.50,  // 1 USD = 58.50 DOP
+    EUR: 63.20,  // 1 EUR = 63.20 DOP
+    DOP: 1       // 1 DOP = 1 DOP
+};
+// ==============================================================
+
 // Inicialización cuando el DOM está listo
 document.addEventListener('DOMContentLoaded', function() {
     loadUserName();
     setDefaultDate();
     setupFormListeners();
-    loadCategories(); // llena el select con categorías
-    // listener para cambiar la imagen al cambiar la categoría
+    loadCategories();
     document.getElementById('category').addEventListener('change', handleCategoryImageChange);
 });
 
@@ -44,67 +51,93 @@ function setDefaultDate() {
 // Carga categorías por defecto + personalizadas en el <select>
 function loadCategories() {
     const select = document.getElementById('category');
-
-    // limpiar el select y dejar solo el placeholder
+  
     select.innerHTML = '<option value="">Selecciona una categoría</option>';
 
-    // 1) agregar categorías por defecto
+    // agregar categorías por defecto
     Object.entries(defaultCategories).forEach(([id, cat]) => {
         const option = document.createElement('option');
-        option.value = id; // id ej: "comida"
+        option.value = id;
         option.textContent = `${cat.icon} ${cat.name}`;
         select.appendChild(option);
     });
 
-    // 2) agregar categorías personalizadas desde localStorage
+    // agregar categorías personalizadas desde localStorage
     const storedCustom = localStorage.getItem('customCategories');
     if (storedCustom) {
         const customCategories = JSON.parse(storedCustom);
         Object.entries(customCategories).forEach(([id, cat]) => {
             const option = document.createElement('option');
-            option.value = id; // id generado en categorias.js
+            option.value = id;
             option.textContent = `${cat.icon} ${cat.name}`;
             select.appendChild(option);
         });
     }
 }
 
+// ========== NUEVA FUNCIÓN: Convertir a DOP ==========
+function convertToDOP(amount, currency) {
+    return amount * EXCHANGE_RATES[currency];
+}
+
+function formatCurrency(amount, currency) {
+    const symbols = {
+        USD: '$',
+        EUR: '€',
+        DOP: 'RD$'
+    };
+    return `${symbols[currency]} ${parseFloat(amount).toFixed(2)}`;
+}
+// ====================================================
+
 // Configura listeners de formulario (preview, validaciones, submit)
 function setupFormListeners() {
     const form = document.getElementById('expenseForm');
     const inputs = form.querySelectorAll('input, select');
 
-    // Actualizar vista previa en tiempo real
+
     inputs.forEach(input => {
         input.addEventListener('input', updatePreview);
     });
 
-    // Validar fecha cuando cambia
-    document.getElementById('date').addEventListener('change', validateDate);
 
-    // Guardar al enviar
+    document.getElementById('date').addEventListener('change', validateDate);
+    
     form.addEventListener('submit', handleSubmit);
 }
 
-// Actualiza la tarjeta de vista previa
+// ========== MODIFICADO: Actualiza la tarjeta de vista previa con conversión ==========
 function updatePreview() {
     const amount = document.getElementById('amount').value;
     const categoryId = document.getElementById('category').value;
     const date = document.getElementById('date').value;
     const currency = document.getElementById('currency').value;
 
-    // Mostrar preview solo si hay algo escrito
+
     if (amount || categoryId || date) {
         document.getElementById('expensePreview').style.display = 'block';
 
-        // Monto
+        // Monto con conversión
         if (amount) {
-            const symbol = currency === 'USD' ? '$' : currency === 'EUR' ? '€' : 'RD$';
-            document.getElementById('previewAmount').textContent =
-                `${symbol} ${parseFloat(amount).toFixed(2)}`;
+            const amountNum = parseFloat(amount);
+            const originalAmount = formatCurrency(amountNum, currency);
+            
+            // Si NO es DOP, mostrar conversión
+            if (currency !== 'DOP') {
+                const dopAmount = convertToDOP(amountNum, currency);
+                document.getElementById('previewAmount').innerHTML = `
+                    ${originalAmount}
+                    <br>
+                    <span style="font-size: 14px; color: #64748b; font-weight: 500;">
+                        ≈ RD$ ${dopAmount.toFixed(2)}
+                    </span>
+                `;
+            } else {
+                document.getElementById('previewAmount').textContent = originalAmount;
+            }
         }
 
-        // Categoría (texto del option seleccionado)
+        // Categoría
         if (categoryId) {
             const select = document.getElementById('category');
             const text = select.options[select.selectedIndex].textContent;
@@ -122,6 +155,7 @@ function updatePreview() {
         }
     }
 }
+// ===================================================================================
 
 // Evita que se registre un gasto con fecha futura
 function validateDate() {
@@ -143,10 +177,10 @@ function validateDate() {
 function handleSubmit(e) {
     e.preventDefault();
 
-    // valida fecha
+
     if (!validateDate()) return;
 
-    // recoge datos del formulario
+
     const formData = {
         amount: parseFloat(document.getElementById('amount').value),
         date: document.getElementById('date').value,
@@ -160,7 +194,7 @@ function handleSubmit(e) {
         })
     };
 
-    // validaciones básicas
+
     if (!formData.amount || !formData.date || !formData.description || !formData.category) {
         showError('Por favor completa todos los campos obligatorios');
         return;
@@ -171,41 +205,54 @@ function handleSubmit(e) {
         return;
     }
 
-    // guarda el gasto
+
     saveExpense(formData);
 }
 
-// Guarda el gasto nuevo en localStorage
+// ========== MODIFICADO: Guarda el gasto con conversión a DOP ==========
 function saveExpense(expenseData) {
     let expenses = JSON.parse(localStorage.getItem('expenses')) || [];
 
+    const amountInDOP = convertToDOP(expenseData.amount, expenseData.currency);
+
     const newExpense = {
-        id: Date.now(),                 // id único
-        amount: expenseData.amount,
+        id: Date.now(),
+        amount: expenseData.amount,           // Monto original
+        amountDOP: amountInDOP,               // NUEVO: Monto convertido a DOP
         description: expenseData.description,
-        category: expenseData.category, // usa el ID de categoría
+        category: expenseData.category,
         date: expenseData.date,
         time: expenseData.time,
         currency: expenseData.currency
     };
 
-    // inserta al inicio (para ver recientes primero)
+
     expenses.unshift(newExpense);
     localStorage.setItem('expenses', JSON.stringify(expenses));
 
-    showSuccess(expenseData.amount, expenseData.currency);
+    showSuccess(expenseData.amount, expenseData.currency, amountInDOP);
 }
+// ======================================================================
 
-// Muestra alert de éxito y redirige al dashboard
-function showSuccess(amount, currency) {
-    const symbol = currency === 'USD' ? '$' : currency === 'EUR' ? '€' : 'RD$';
-
-    alert(`✅ ¡Gasto registrado exitosamente!\n\nMonto: ${symbol} ${parseFloat(amount).toFixed(2)}\n\nRedirigiendo al dashboard...`);
+// ========== MODIFICADO: Muestra alert de éxito con conversión ==========
+function showSuccess(amount, currency, amountDOP) {
+    const originalAmount = formatCurrency(amount, currency);
+    
+    let message = `✅ ¡Gasto registrado exitosamente!\n\nMonto: ${originalAmount}`;
+    
+    if (currency !== 'DOP') {
+        message += `\nEquivalente: RD$ ${amountDOP.toFixed(2)}`;
+    }
+    
+    message += '\n\nRedirigiendo al dashboard...';
+    
+    alert(message);
 
     setTimeout(() => {
         window.location.href = 'index.html';
     }, 500);
 }
+// =======================================================================
 
 // Muestra mensaje de error en el recuadro rojo
 function showError(message) {
@@ -213,7 +260,7 @@ function showError(message) {
     errorDiv.textContent = message;
     errorDiv.style.display = 'block';
 
-    // Oculta automáticamente después de 5 segundos
+
     setTimeout(() => {
         hideError();
     }, 5000);
@@ -224,20 +271,20 @@ function hideError() {
     document.getElementById('errorMessage').style.display = 'none';
 }
 
-// Cambia la imagen lateral según la categoría seleccionada, con animación de fade
+// Cambia la imagen lateral según la categoría seleccionada
 function handleCategoryImageChange() {
     const select = document.getElementById('category');
-    const categoryId = select.value; // ej: "comida"
+    const categoryId = select.value;
     const img = document.getElementById('categoryImage');
 
-    // efecto de desvanecido
+
     img.style.opacity = 0;
 
     setTimeout(() => {
         if (categoryImages[categoryId]) {
             img.src = categoryImages[categoryId];
         } else {
-            img.src = 'img/registro-g.png'; // imagen por defecto
+            img.src = 'img/registro-g.png';
         }
         img.style.opacity = 1;
     }, 300);

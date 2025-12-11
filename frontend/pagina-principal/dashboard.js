@@ -12,9 +12,17 @@ const categoryConfig = {
     hogar: { icon: "🏠", bg: "#fed7aa", name: "Hogar", color: "#f97316" }
 };
 
+// ========== NUEVO: Tasas de cambio (iguales a registro-gastos.js) ==========
+const EXCHANGE_RATES = {
+    USD: 58.50,
+    EUR: 63.20,
+    DOP: 1
+};
+// ===========================================================================
+
 let currentFilter = "month";
 let expenses = [];
-let monthlyLimit = 15000; // valor por defecto
+let monthlyLimit = 15000;
 
 document.addEventListener("DOMContentLoaded", () => {
     loadUserName();
@@ -45,7 +53,6 @@ function loadExpenses() {
     if (stored) {
         try {
             const parsed = JSON.parse(stored);
-            // normalizar y filtrar gastos mal formados
             expenses = Array.isArray(parsed)
                 ? parsed.filter(e => typeof e.amount === "number" && e.date)
                 : [];
@@ -58,6 +65,30 @@ function loadExpenses() {
         expenses = [];
     }
 }
+
+// ========== NUEVA FUNCIÓN: Obtener monto en DOP ==========
+function getAmountInDOP(expense) {
+    // Si ya tiene amountDOP guardado, usarlo
+    if (expense.amountDOP) {
+        return expense.amountDOP;
+    }
+    
+    // Si no, calcularlo (para gastos antiguos)
+    const currency = expense.currency || 'DOP';
+    const rate = EXCHANGE_RATES[currency] || 1;
+    return expense.amount * rate;
+}
+
+function formatCurrencyWithSymbol(amount, currency) {
+    const symbols = {
+        USD: '$',
+        EUR: '€',
+        DOP: 'RD$'
+    };
+    const symbol = symbols[currency] || 'RD$';
+    return `${symbol} ${parseFloat(amount).toFixed(2)}`;
+}
+// ==========================================================
 
 // ================= DASHBOARD =================
 
@@ -79,18 +110,25 @@ function calculateTotals() {
     const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
     const monthStartStr = monthStart.toISOString().split("T")[0];
 
-    const todayTotal = sumAmounts(expenses.filter(e => e.date === todayStr));
-    const weekTotal = sumAmounts(expenses.filter(e => e.date >= weekStartStr));
-    const monthTotal = sumAmounts(expenses.filter(e => e.date >= monthStartStr));
+    // Usar amountDOP para los totales
+    const todayTotal = sumAmountsDOP(expenses.filter(e => e.date === todayStr));
+    const weekTotal = sumAmountsDOP(expenses.filter(e => e.date >= weekStartStr));
+    const monthTotal = sumAmountsDOP(expenses.filter(e => e.date >= monthStartStr));
 
     document.getElementById("todayTotal").textContent = formatCurrency(todayTotal);
     document.getElementById("weekTotal").textContent = formatCurrency(weekTotal);
     document.getElementById("monthTotal").textContent = formatCurrency(monthTotal);
 }
 
+// ========== MODIFICADO: Suma usando DOP ==========
 function sumAmounts(list) {
     return list.reduce((sum, e) => sum + (Number(e.amount) || 0), 0);
 }
+
+function sumAmountsDOP(list) {
+    return list.reduce((sum, e) => sum + getAmountInDOP(e), 0);
+}
+// =================================================
 
 // ================= GRÁFICO CIRCULAR =================
 
@@ -98,10 +136,11 @@ function renderPieChart() {
     const filteredExpenses = getFilteredExpenses();
     const categoryTotals = {};
 
+    // Usar amountDOP para el gráfico
     filteredExpenses.forEach(expense => {
         if (!expense.category) return;
         if (!categoryTotals[expense.category]) categoryTotals[expense.category] = 0;
-        categoryTotals[expense.category] += Number(expense.amount) || 0;
+        categoryTotals[expense.category] += getAmountInDOP(expense);
     });
 
     const totalAmount = Object.values(categoryTotals).reduce((s, v) => s + v, 0);
@@ -154,6 +193,7 @@ function renderPieChart() {
     chartLegend.innerHTML = legendHTML;
 }
 
+// ========== MODIFICADO: Mostrar conversión en gastos recientes ==========
 function renderRecentExpenses() {
     const expensesList = document.getElementById("expensesList");
     expensesList.innerHTML = "";
@@ -175,6 +215,29 @@ function renderRecentExpenses() {
             bg: "#e2e8f0"
         };
         const formattedDate = formatDate(expense.date);
+        
+        // Obtener moneda y monto
+        const currency = expense.currency || 'DOP';
+        const originalAmount = expense.amount;
+        const amountInDOP = getAmountInDOP(expense);
+        
+        // Formatear el monto para mostrar
+        let amountDisplay = '';
+        if (currency !== 'DOP') {
+            // Mostrar monto original + conversión
+            const originalFormatted = formatCurrencyWithSymbol(originalAmount, currency);
+            amountDisplay = `
+                <div class="expense-amount">
+                    -${originalFormatted}
+                    <div style="font-size: 11px; color: #64748b; font-weight: 500; margin-top: 2px;">
+                        ≈ RD$ ${amountInDOP.toFixed(2)}
+                    </div>
+                </div>
+            `;
+        } else {
+            // Solo mostrar monto en DOP
+            amountDisplay = `<div class="expense-amount">-${formatCurrency(amountInDOP)}</div>`;
+        }
 
         const div = document.createElement("div");
         div.className = "expense-item";
@@ -192,11 +255,12 @@ function renderRecentExpenses() {
                     <span>${expense.time || ""}</span>
                 </div>
             </div>
-            <div class="expense-amount">-${formatCurrency(Number(expense.amount) || 0)}</div>
+            ${amountDisplay}
         `;
         expensesList.appendChild(div);
     });
 }
+// ========================================================================
 
 function getFilteredExpenses() {
     const today = new Date();
@@ -224,7 +288,7 @@ function checkLimits() {
     const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
     const monthStartStr = monthStart.toISOString().split("T")[0];
 
-    const monthTotal = sumAmounts(expenses.filter(e => e.date >= monthStartStr));
+    const monthTotal = sumAmountsDOP(expenses.filter(e => e.date >= monthStartStr));
     const percentage = monthlyLimit > 0 ? (monthTotal / monthlyLimit) * 100 : 0;
 
     if (percentage >= 100) {
@@ -235,7 +299,7 @@ function checkLimits() {
         );
     } else if (percentage >= 80) {
         showAlert(
-            ` Estás cerca de tu límite mensual (${percentage.toFixed(
+            `⚠️ Estás cerca de tu límite mensual (${percentage.toFixed(
                 0
             )}%). Has gastado ${formatCurrency(monthTotal)} de ${formatCurrency(monthlyLimit)}`
         );
